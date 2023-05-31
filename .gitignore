@@ -5,6 +5,9 @@ coverage.json
 /typechain
 /typechain-types
 .direnv/
+/prisma/migrations/
+magicmirror
+logfile
 
 # Yarn
 .pnp.*
@@ -22,6 +25,12 @@ artifacts/
 # Deployments
 /deployments/hardhat/
 /deployments/ganache/
+/public/deployments/ganache/
+/public/projects/deployed/*_ganache.json
+/public/projects/compiled/
+/projects/compiled/
+/projects/deployed/ganache/
+/projects/deployed/hardhat/
 
 # Temp folder
 /temp
@@ -36,7 +45,7 @@ beta/
 /alpha/__gems/
 /beta/__gems/
 /*/__gems/
-/projects/bundles/
+
 
 .DS_Store
 dist/
@@ -52,3 +61,4 @@ package-lock.json
 yarn.lock
 package-lock.json
 yarn.lock
+package-lock.json

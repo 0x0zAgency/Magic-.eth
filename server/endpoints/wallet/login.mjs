@@ -1,87 +1,81 @@
-import pkg from 'siwe';
-import jwt from 'jsonwebtoken';
+import siwe from 'siwe';
 import server from '../../server.mjs';
-const { SiweMessage, ErrorTypes } = pkg;
-
+import { success, userError } from '../../utils/helpers.mjs';
+//siwe stuff
+const { SiweMessage, ErrorTypes } = siwe;
 /**
  *
- * @param {import('express').Request} request
- * @param {import('express').Response} response
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  */
-export const post = async (request, response) => {
-	const { method } = request;
-	switch (method) {
-		default: // If anything other than a POST, deny it.
-			response.setHeader('Allow', ['POST']);
-			response.status(405).end(`Method ${method} Not Allowed`);
-			break;
-		case 'POST':
-			try {
-				if (!request.body.message) {
-					response.status(422).json({
-						ok: false,
-						error: 'Expected prepareMessage object as body.',
-					});
-					return;
-				}
+export const post = async (req, res) => {
+	try {
+		if (!req.body.message) return userError(res, 'Missing message.');
 
-				const { message, signature } = request.body;
-				const siweMessage = new SiweMessage(message);
-				const fields = await siweMessage.validate(signature);
+		let SIWEObject = new SiweMessage(req.body.message);
+		let { data: message } = await SIWEObject.verify({
+			signature: req.body.signature,
+			nonce: req.session.nonce,
+		});
 
-				if (fields.nonce !== request.session.nonce) {
-					response.status(422).json({
-						ok: false,
-						error: 'Invalid nonce.',
-					});
-					return;
-				}
+		req.session.siwe = message;
+		req.session.cookie.expires = new Date(message.expirationTime);
 
-				request.session.siwe = fields;
-				request.session.cookie.expires = new Date(fields.expirationTime);
+		//add them to the database if they don't exist
+		if (
+			!(await server.prisma.user.count({
+				where: {
+					address: message.address,
+				},
+			}))
+		)
+			await server.prisma.user.create({
+				data: {
+					address: message.address,
+				},
+			});
 
-				// We'll use this for actually authenticating the user to login.
-				const jwtToken = jwt.sign({ message }, process.env.JWT_KEY, {
-					expiresIn: 60 * 60,
-				});
+		//fetch the user
+		let user = await server.prisma.user.findUnique({
+			where: {
+				address: message.address,
+			},
+			select: {
+				role: true,
+			},
+		});
 
-				// Set the wallet's sessionID to redis.
-				server.redisClient.set(fields.address, request.sessionID);
-				request.session.save(() =>
-					response
-						.status(200)
-						.cookie('jwt_token=authentication', jwtToken)
-						.send(jwtToken)
-						.end()
-				);
-			} catch (err) {
-				request.session.siwe = null;
-				request.session.nonce = null;
-				console.error(err);
+		req.session.role = user.role;
 
-				// Very specifc error handling.
-				const { message } = err;
-				switch (err) {
-					case ErrorTypes.EXPIRED_MESSAGE: {
-						request.session.save(() =>
-							response.status(440).ok(false).json({ message })
-						);
-						break;
-					}
-					case ErrorTypes.INVALID_SIGNATURE: {
-						request.session.save(() =>
-							response.status(422).ok(false).json({ message })
-						);
-						break;
-					}
-					default: {
-						request.session.save(() =>
-							response.status(500).ok(false).json({ message })
-						);
-						break;
-					}
-				}
-			}
-			break;
+		if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
+			req.session.admin = true;
+
+		//set the current address to equal the current sessionId, we do this to prevent session hijacking and if they switch wallet
+		await server.redisClient.set(message.address, req.sessionID);
+		//save the session
+		await new Promise((resolve) => req.session.save(resolve));
+
+		return success(res, {
+			verified: true,
+			address: message.address,
+		});
+	} catch (err) {
+		req.session.siwe = null;
+		req.session.nonce = null;
+		req.session.role = null;
+		req.session.admin = null;
+		await new Promise((resolve) => req.session.save(resolve));
+		// Log the error.
+		console.error(err);
+		// Very specifc error handling.
+		switch (err) {
+			case ErrorTypes.EXPIRED_MESSAGE:
+				return userError(res, 'Expired message.');
+
+			case ErrorTypes.INVALID_SIGNATURE:
+				return userError(res, 'Invalid signature.');
+			default:
+				return userError(res, err.message);
+		}
 	}
 };

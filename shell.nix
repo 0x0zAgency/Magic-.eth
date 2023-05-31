@@ -1,10 +1,13 @@
-with import <nixpkgs> {};
+{ pkgs ? import <nixpkgs> { } }:
+with pkgs;
 
-stdenv.mkDerivation {
-    name = "node";
+mkShell {
     buildInputs = [
         jq
         nodejs
+		ripgrep
+		git-up
+		postgresql_12
     ];
     shellHook = ''
         export PATH="$PWD/node_modules/.bin/:$PATH"

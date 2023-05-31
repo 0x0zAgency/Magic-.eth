@@ -1,14 +1,24 @@
 import config from './config';
 
+type Routes = typeof config.routes;
+type Keys = keyof Routes;
+
+/**
+ *
+ * @returns
+ */
 export const getEndpointHref = () => {
 	const isLocalhost = window.location.href.includes('localhost');
 	if (isLocalhost && config.useLocalApi) return config.localApiEndpoint;
 	else return config.apiEndpoint;
 };
 
-export const getEndpoint = (
-	type: 'chat' | 'gpt3' | 'search' | 'nft' | 'ipfs' | 'ipns' | 'wallet'
-) => {
+/**
+ *
+ * @param type
+ * @returns
+ */
+export const getEndpoint = (type: Keys) => {
 	if (config.routes[type] === undefined)
 		throw new Error('invalid api type: ' + type);
 
@@ -18,21 +28,39 @@ export const getEndpoint = (
 	return getEndpointHref() + route;
 };
 
+/**
+ *
+ * @param type
+ * @param method
+ * @param data
+ * @param requestMethod
+ * @param abortController
+ * @returns
+ */
 export const apiFetch = async (
-	type: 'chat' | 'gpt3' | 'search' | 'nft' | 'ipfs' | 'ipns',
+	type: Keys,
 	method: string,
 	data: any,
-	requestMethod: 'GET' | 'POST',
+	requestMethod: 'GET' | 'POST' = 'GET',
 	abortController?: AbortController
 ) => {
 	let endPoint = getEndpoint(type);
 	requestMethod = requestMethod || 'GET';
+	endPoint = endPoint + method;
+	if (requestMethod === 'GET' && data)
+		endPoint += '?' + new URLSearchParams(data).toString();
 
-	const result = await fetch(endPoint + method, {
+	const result = await fetch(endPoint, {
 		method: requestMethod,
 		headers: { 'Content-Type': 'application/json' },
 		signal: abortController?.signal,
-		body: JSON.stringify(data),
+		body:
+			requestMethod === 'GET'
+				? undefined
+				: data
+				? JSON.stringify(data)
+				: JSON.stringify({}),
+		credentials: 'include',
 	});
 
 	if (result.status !== 200) {

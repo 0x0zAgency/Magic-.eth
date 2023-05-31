@@ -7,142 +7,142 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Apocalypse Grunge';
-  src: url('./Apocalypse Grunge.ttf');
+	font-family: 'Apocalypse Grunge';
+	src: url('./Apocalypse Grunge.ttf');
 }
 @font-face {
-  font-family: 'TheNextFont';
-  src: url('./TheNextFont.ttf');
+	font-family: 'TheNextFont';
+	src: url('./TheNextFont.ttf');
 }
 @font-face {
-  font-family: 'Amatic SC';
-  src: url('./AmaticSC-Regular.ttf');
+	font-family: 'Amatic SC';
+	src: url('./AmaticSC-Regular.ttf');
 }
 @font-face {
-  font-family: 'Dancing Script';
-  src: url('./DancingScript-VariableFont_wght.ttf');
+	font-family: 'Dancing Script';
+	src: url('./DancingScript-VariableFont_wght.ttf');
 }
 @font-face {
-  font-family: 'Lobster';
-  src: url('./Lobster-Regular.ttf');
+	font-family: 'Lobster';
+	src: url('./Lobster-Regular.ttf');
 }
 @font-face {
-  font-family: 'Luckiest Guy';
-  src: url('./LuckiestGuy-Regular.ttf');
+	font-family: 'Luckiest Guy';
+	src: url('./LuckiestGuy-Regular.ttf');
 }
 @font-face {
-  font-family: 'Roboto Mono';
-  src: url('./RobotoMono-VariableFont_wght.ttf');
+	font-family: 'Roboto Mono';
+	src: url('./RobotoMono-VariableFont_wght.ttf');
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('./Montserrat-VariableFont_wght.ttf');
+	font-family: 'Montserrat';
+	src: url('./Montserrat-VariableFont_wght.ttf');
 }
 @font-face {
-  font-family: 'Comfortaa';
-  src: url('./Comfortaa-Regular.ttf');
+	font-family: 'Comfortaa';
+	src: url('./Comfortaa-Regular.ttf');
 }
 
 input {
-  font-family: 'Comfortaa' !important;
+	font-family: 'Comfortaa' !important;
 }
 
 select {
-  font-family: 'Comfortaa' !important;
+	font-family: 'Comfortaa' !important;
 }
 
 @keyframes blink-text {
-  0% {
-    color: transparent;
-  }
-  50% {
-    color: transparent;
-  }
-  50.1% {
-    color: white;
-  }
-  100% {
-    color: white;
-  }
+	0% {
+		color: transparent;
+	}
+	50% {
+		color: transparent;
+	}
+	50.1% {
+		color: white;
+	}
+	100% {
+		color: white;
+	}
 }
 
 .title {
-  font-weight: 500;
+	font-weight: 500;
 }
 
 div[hidden] {
-  @apply hidden;
+	@apply hidden;
 }
 
 footer[hidden='true'] {
-  @apply hidden;
+	@apply hidden;
 }
 
 button[hidden='true'] {
-  @apply hidden;
+	@apply hidden;
 }
 
 .alert[hidden='false'] {
-  @apply animate-pulse;
+	@apply animate-pulse;
 }
 
 div[data-theme='cyberpunk'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='light'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='emerald'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='lemonade'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='corporate'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='valentine'] .title {
-  color: #1d1d1d;
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	color: #1d1d1d;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='forest'] .title {
-  color: --tw-text-primary;
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	color: --tw-text-primary;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 div[data-theme='forest'] .title {
-  --tw-gradient-from: black !important;
-  --tw-gradient-to: black !important;
+	--tw-gradient-from: black !important;
+	--tw-gradient-to: black !important;
 }
 
 input[disabled]:hover {
-  @apply input-warning text-gray-500 border-gray-500;
+	@apply input-warning text-gray-500 border-gray-500;
 }
 
 input[data-loading='true'] {
-  @apply text-gray-500;
+	@apply text-gray-500;
 }
 
 button[data-loading='true'] {
-  @apply loading bg-gray-500;
+	@apply loading bg-gray-500;
 }
 
 button[data-selected='true'] {
-  @apply bg-success;
+	@apply bg-success;
 }
 .blink-text {
-  animation: 1s blink-text step-end infinite;
+	animation: 1s blink-text step-end infinite;
 }

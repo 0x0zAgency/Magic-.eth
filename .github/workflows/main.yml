@@ -1,25 +1,25 @@
 name: Continuous Deployment
 on:
-  push:
-    branches:
-      - master
+    push:
+        branches:
+            - master
 
 jobs:
-  deployment:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v2
+    deployment:
+        runs-on: self-hosted
+        steps:
+            - name: Checkout main branch
+              uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.12.1'
-      - run: npm ci --verbose
-      - run: npm run build
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.x'
+            - run: npm ci
+            - run: npm run build
 
-      - name: Serve react
-        run: cp -r build/* /var/www/magicmirror/html/
+            - name: Serve react
+              run: cp -r build /var/www/web_eth/
 
-      - name: Serve API
-        run: cp -r . /var/www/magicmirror/api
+            - name: Deploy API
+              run: cp -r * /var/www/web_eth/api

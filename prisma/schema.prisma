@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Don't touch with out asking lyds :)
 
 generator client {
   provider = "prisma-client-js"
@@ -10,4 +9,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  address      String         @id @unique
+  createdAt    DateTime       @default(now())
+  role         Role           @default(USER)
+  ENS          ENS[]
+  FakeRegistry FakeRegistry[]
+  LastFetched  LastFetched?
+  Manager      Manager[]
+  history      History[]
+}
 
+model History {
+  id         Int      @id @default(autoincrement())
+  domainName String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  address    String
+  user       User     @relation(fields: [address], references: [address])
+}
+
+model FakeRegistry {
+  domainName   String   @id @unique
+  ownerAddress String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  owner        User     @relation(fields: [ownerAddress], references: [address])
+  ens          ENS      @relation(fields: [domainName], references: [domainName])
+  registry     String
+}
+
+model ENS {
+  tokenId            String        @id @unique
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  ownerAddress       String
+  ensContractAddress String
+  domainName         String        @unique
+  nftUri             Json
+  nftName            String
+  nftDescription     String
+  nftMedia           Json
+  FakeRegistry       FakeRegistry?
+  User               User?         @relation(fields: [ownerAddress], references: [address])
+  Manager            Manager[]
+  Stats              Stats?        @relation(fields: [domainName], references: [domainName])
+}
+
+model Manager {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  managerAddress String
+  domainName     String   @unique
+  approved       Boolean
+  user           User     @relation(fields: [managerAddress], references: [address])
+  ens            ENS      @relation(fields: [domainName], references: [domainName])
+}
+
+model LastFetched {
+  address     String   @id @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastFetched DateTime
+  isPowerUser Boolean
+  owner       User     @relation(fields: [address], references: [address])
+}
+
+model Stats {
+  domainName     String   @id @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  totalViews     Int      @default(0)
+  lastHourViews  Int      @default(0)
+  lastDayViews   Int      @default(0)
+  lastWeekViews  Int      @default(0)
+  lastMonthViews Int      @default(0)
+  lastYearViews  Int      @default(0)
+  ENS            ENS?
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  TICKET_HOLDER
+}

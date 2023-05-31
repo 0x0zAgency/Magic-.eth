@@ -1,29 +1,30 @@
 services:
-    react-frontend:
-        build:
-            context: .
-            dockerfile: Dockerfile.react
-        expose:
-            - 6379
-        depends_on:
-            - express
-    redis:
-        image: redislabs/redismod
-        container_name: redis
+  redis:
+    image: redislabs/redismod
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      pgdata:
+        - pgdata:/var/lib/postgresql/data
+      adminer:
+        image: adminer
+        restart: always
         ports:
-            - '6379:6379' 
-    express:
-        build:
-            context: .
-            dockerfile: Dockerfile.express
-        ports:
-            - 9090:9090
-        depends_on:
-            - redis
-            - console
-    console:
-        build:
-            context: .
-            dockerfile: Dockerfile.console
-        ports:
-        - 8888:8888
+          - 8080:8080
+
+  infinitymint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 9090:9090
+      - 80:80
+    depends_on:
+      - redis

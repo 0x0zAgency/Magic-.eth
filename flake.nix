@@ -30,30 +30,7 @@
         packageJSON = ./package.json;
       };
     in {
-      devShell = pkgs.mkShell rec {
-        buildInputs = with pkgs; [
-          nodejs-18_x
-          pm2
-          yarn
-          jq
-        ];
-        # For proper yarnv2 intergration, you'll need to run the steps listed here;
-        # <https://github.com/stephank/yarn-plugin-nixify>
-        # This is a temporary workaround until nixpkgs ship v2 by default.
-        shellHook = ''
-          export PATH=$PWD/node_modules/.bin/:$PATH
-          alias scripts='jq ".scripts" package.json'
-      		alias run='npm run'
-          alias g='git' \
-              ga='g add' \
-              gl='g pull' \
-              gf='g fetch' \
-              gp='g push' \
-              gst='g status' \
-              gcm='g commit -m' \
-              gcmsg='g add -A; g commit -am'
-        '';
-      };
+      devShells.default = import ./shell.nix { inherit pkgs; };
 
       installHook = ''
         yarn set version berry
